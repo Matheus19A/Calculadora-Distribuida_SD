@@ -11,59 +11,59 @@ public class ServerBasicOperations {
 
   public static void main(String[] args) {
     try (
-      ServerSocket serverSocket = new ServerSocket(9999); //ServerSocket é responsável por aguardar conexões dos clientes na porta definida anteriormente.
-      Socket clientSocket = serverSocket.accept(); //Se conecta com o cliente;
+      ServerSocket serverSocket = new ServerSocket(9999); // ServerSocket é responsável por aguardar conexões dos
+      // clientes na porta definida anteriormente.
+      Socket clientSocket = serverSocket.accept(); // Se conecta com o cliente;
       PrintWriter outData = new PrintWriter(
         clientSocket.getOutputStream(),
         true
-      ); //Envia dados para o cliente;
+      ); // Envia dados para o cliente;
       BufferedReader inData = new BufferedReader(
         new InputStreamReader(clientSocket.getInputStream())
-      ); //Recebe os dados do cliente;
+      ); // Recebe os dados do cliente;
     ) {
-      System.out.println("Conexão estabelecida com o cliente");
+      int operationResult;
 
-      int resultOperation;
+      System.out.println("\nConexão estabelecida com o cliente");
 
-      //Recebendo os numeros e o operador enviados pelo cliente;
-      String operation = inData.readLine();
-      String num1 = inData.readLine();
-      String num2 = inData.readLine();
+      Boolean condition = Boolean.parseBoolean(inData.readLine()); //Recebe o condition do cliente;
 
-      System.out.print(num1);
-      System.out.print(num2);
+      while (condition) {
+        String resultOperator = inData.readLine(); //Operador;
+        String num1 = inData.readLine(); //Número 1;
+        String num2 = inData.readLine(); //Número 2;
 
-      Boolean result = Boolean.parseBoolean(inData.readLine());
-
-      while (result) {
-        switch (operation) {
+        switch (resultOperator) {
           case "+":
-            resultOperation = Integer.parseInt(num1) + Integer.parseInt(num2);
-            outData.println(resultOperation);
+            operationResult = Integer.parseInt(num1) + Integer.parseInt(num2);
+            outData.println(operationResult);
             break;
           case "-":
+            operationResult = Integer.parseInt(num1) - Integer.parseInt(num2);
+            outData.println(operationResult);
             break;
           case "/":
+            operationResult = Integer.parseInt(num1) / Integer.parseInt(num2);
+            outData.println(operationResult);
             break;
           case "*":
+            operationResult = Integer.parseInt(num1) * Integer.parseInt(num2);
+            outData.println(operationResult);
             break;
           default:
             System.out.println("Nenhuma resposta encontrada");
         }
 
-        if (result == true) {
-          operation = inData.readLine();
-          num1 = inData.readLine();
-          num2 = inData.readLine();
-        }
+        condition = Boolean.parseBoolean(inData.readLine());
       }
 
       inData.close();
       outData.close();
       clientSocket.close();
     } catch (IOException e) {
-      System.err.println("Não foi possível se conectar com o cliente.");
-      System.err.println("Erro: " + e);
+      System.err.println(
+        "Não foi possível se conectar com o cliente devido ao erro: " + e
+      );
     }
   }
 }
