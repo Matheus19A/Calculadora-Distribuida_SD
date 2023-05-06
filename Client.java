@@ -10,6 +10,7 @@ import java.util.Scanner;
 public class Client {
 
   static Scanner scanner = new Scanner(System.in);
+  static String host = "192.168.0.104"; //Altere para o seu endereço;
 
   public static String operatorName(String operator) {
     String result = "";
@@ -62,7 +63,7 @@ public class Client {
 
   public static void main(String[] args) throws IOException {
     try (
-      Socket socket = new Socket("192.168.0.104", 9999);
+      Socket socket = new Socket(host, 9999);
       PrintWriter outData = new PrintWriter(socket.getOutputStream(), true); // PrintWriter é usado para enviar dados para
       // o servidor;
       BufferedReader inData = new BufferedReader(
