@@ -5,15 +5,31 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-//Executar as 4 operaçoes básicas -> Soma, subtração, divisão e multiplicação.
-
 public class ServerBasicOperations {
+  public static float sum(String num1, String num2) {
+    return Float.parseFloat(num1) + Float.parseFloat(num2);
+  }
 
-  public static void main(String[] args) {
-    try (
-      ServerSocket serverSocket = new ServerSocket(9999); // ServerSocket é responsável por aguardar conexões dos
-      // clientes na porta definida anteriormente.
+  public static float subtraction(String num1, String num2) {
+    return Float.parseFloat(num1) - Float.parseFloat(num2);
+  }
+
+  public static float division(String num1, String num2) {
+    return Float.parseFloat(num1) / Float.parseFloat(num2);
+  }
+
+  public static float multiplication(String num1, String num2) {
+    return Float.parseFloat(num1) * Float.parseFloat(num2);
+  }
+
+  public static void main(String[] args) { 
+
+    try {
+      ServerSocket serverSocket = new ServerSocket(1224); //responsável por aguardar a conexão do cliente
+      System.out.println("Servidor 1 iniciado.");
+
       Socket clientSocket = serverSocket.accept(); // Se conecta com o cliente;
+
       PrintWriter outData = new PrintWriter(
         clientSocket.getOutputStream(),
         true
@@ -21,33 +37,31 @@ public class ServerBasicOperations {
       BufferedReader inData = new BufferedReader(
         new InputStreamReader(clientSocket.getInputStream())
       ); // Recebe os dados do cliente;
-    ) {
-      int operationResult;
-
-      System.out.println("\nConexão estabelecida com o cliente");
 
       Boolean condition = Boolean.parseBoolean(inData.readLine()); //Recebe o condition do cliente;
 
       while (condition) {
-        String resultOperator = inData.readLine(); //Operador;
-        String num1 = inData.readLine(); //Número 1;
-        String num2 = inData.readLine(); //Número 2;
+        float operationResult = 0;
+
+        String resultOperator = inData.readLine(); //Operator;
+        String num1 = inData.readLine(); //Number 1;
+        String num2 = inData.readLine(); //Number 2;
 
         switch (resultOperator) {
           case "+":
-            operationResult = Integer.parseInt(num1) + Integer.parseInt(num2);
+            operationResult = sum(num1, num2);
             outData.println(operationResult);
             break;
           case "-":
-            operationResult = Integer.parseInt(num1) - Integer.parseInt(num2);
+            operationResult = subtraction(num1, num2);
             outData.println(operationResult);
             break;
           case "/":
-            operationResult = Integer.parseInt(num1) / Integer.parseInt(num2);
+            operationResult = division(num2, num2);
             outData.println(operationResult);
             break;
           case "*":
-            operationResult = Integer.parseInt(num1) * Integer.parseInt(num2);
+            operationResult = multiplication(num1, num1);
             outData.println(operationResult);
             break;
           default:
@@ -60,6 +74,7 @@ public class ServerBasicOperations {
       inData.close();
       outData.close();
       clientSocket.close();
+      serverSocket.close();
     } catch (IOException e) {
       System.err.println(
         "Não foi possível se conectar com o cliente devido ao erro: " + e
