@@ -11,6 +11,7 @@ public class Client {
 
   static Scanner scanner = new Scanner(System.in);
   static String host = "192.168.0.104"; //Altere para o seu endereço;
+  static String port = "1223";
 
   public static String operatorName(String operator) {
     String result = "";
@@ -28,19 +29,35 @@ public class Client {
       case "/":
         result = "Divisão";
         break;
+      case "%":
+        result = "Porcentagem";
+        break;
+      case "raiz":
+        result = "Raiz quadrada";
+        break;
+      case "^":
+        result = "Potenciação";
+        break;
     }
 
     return result;
   }
 
   public static void optionsMenu() {
-    System.out.print("\n-- Calculadora distribuída --\n\n");
-    System.out.print("Menu de operações disponíveis\n");
+    System.out.print("\n-- Calculadora distribuida --\n\n");
+    System.out.print("Menu de operacoes disponiveis\n");
     System.out.print("-----------------------------\n");
-    System.out.print("Soma (+)\n");
-    System.out.print("Subtração (-)\n");
-    System.out.print("Multiplicação (*)\n");
-    System.out.print("Divisão (/)\n");
+
+    if (port == "1224") {
+      System.out.print("Soma (+)\n");
+      System.out.print("Subtracao (-)\n");
+      System.out.print("Multiplicacao (*)\n");
+      System.out.print("Divisao (/)\n");
+    } else if (port == "1223") {
+      System.out.print("Porcentagem (%)\n");
+      System.out.print("Raiz quadrada (raiz)\n");
+      System.out.print("Potenciacao (^)\n");
+    }
     System.out.println("-----------------------------\n");
   }
 
@@ -53,8 +70,6 @@ public class Client {
 
     String formattedString = resultCondition.toLowerCase().trim();
 
-    System.out.println();
-
     if (formattedString.equals("sim")) condition = true;
     if (formattedString.equals("nao")) condition = false;
 
@@ -63,7 +78,7 @@ public class Client {
 
   public static void main(String[] args) throws IOException {
     try (
-      Socket socket = new Socket(host, 9999);
+      Socket socket = new Socket(host, 1223);
       PrintWriter outData = new PrintWriter(socket.getOutputStream(), true); // PrintWriter é usado para enviar dados para
       // o servidor;
       BufferedReader inData = new BufferedReader(
@@ -78,25 +93,58 @@ public class Client {
     ) {
       Boolean condition = true;
       String resultCondition = "";
+      int cont = 0;
 
-      optionsMenu();
+      if (cont == 0) optionsMenu();
 
       while (condition) {
+        if (cont != 0) optionsMenu();
+        cont++;
+
         System.out.print("Escolha o operador: ");
         String resultOperator = operator.readLine();
 
         String nameOperation = operatorName(resultOperator);
 
-        System.out.print("\nDigite o primeiro número: ");
-        String num1 = number.readLine();
-        System.out.print("Digite o segundo número: ");
-        String num2 = number.readLine();
+        if (resultOperator.equals("%")) {
+          System.out.print("\nDigite o número: ");
+          String num1 = number.readLine();
+          System.out.print("Digite a taxa: ");
+          String taxa = number.readLine();
 
-        // Envia os dados para o servidor;
-        outData.println(condition); //Verificação para o server;
-        outData.println(resultOperator); //Operador;
-        outData.println(num1); //Numero 1;
-        outData.println(num2); //Numero 2;
+          // Envia os dados para o servidor;
+          outData.println(condition);
+          outData.println(resultOperator);
+          outData.println(num1);
+          outData.println(taxa);
+        } else if (resultOperator.equals("raiz")) {
+          System.out.print("\nDigite um número: ");
+          String num1 = number.readLine();
+
+          outData.println(condition);
+          outData.println(resultOperator);
+          outData.println(num1);
+        } else if (resultOperator.equals("^")) {
+          System.out.print("\nDigite a base: ");
+          String num1 = number.readLine();
+          System.out.print("Digite o expoente: ");
+          String num2 = number.readLine();
+
+          outData.println(condition);
+          outData.println(resultOperator);
+          outData.println(num1);
+          outData.println(num2);
+        } else {
+          System.out.print("\nDigite o primeiro número: ");
+          String num1 = number.readLine();
+          System.out.print("Digite o segundo número: ");
+          String num2 = number.readLine();
+
+          outData.println(condition); //Verificação para o server;
+          outData.println(resultOperator); //Operador;
+          outData.println(num1); //Numero 1;
+          outData.println(num2); //Numero 2;
+        }
 
         // Recebe o resultado enviado pelo servidor;
         String resultOperation = inData.readLine();
